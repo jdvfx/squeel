@@ -2,8 +2,6 @@
 #![allow(dead_code, unused_variables, unused_assignments, unused_imports)]
 use sqlx::sqlite::SqliteRow;
 
-// use serde::{Deserialize, Serialize};
-
 use sqlx::Row;
 use sqlx::sqlite;
 use sqlx::Connection;
@@ -17,6 +15,9 @@ struct Dbstruct {
     gender: String,
 }
 
+// need to use try_get() instead of get()
+// otherwise, it's going to panic!
+// if any field is missing
 impl From<&SqliteRow> for Dbstruct {
     fn from(row: &SqliteRow) -> Dbstruct {
         Dbstruct {
@@ -29,11 +30,6 @@ impl From<&SqliteRow> for Dbstruct {
     }
 }
 
-// fn row_deser(row: Vec<SqliteRow>) -> Dbstruct {
-//     let id: Result<i64, _> = row.try_get("id");
-//     println!("id: {}", id);
-// }
-
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
     let mut conn = sqlite::SqliteConnection::connect("sqlite:/home/bunker/test1.db").await?;
@@ -43,29 +39,9 @@ async fn main() -> Result<(), sqlx::Error> {
         .await?;
 
     for i in row.iter() {
-        let id: Result<i64, sqlx::Error> = i.try_get("id");
-        match id {
-            Ok(id) => println!("Ok: {}", id),
-            Err(e) => println!("Err: {}", e),
-        }
-
         let x: Dbstruct = i.into();
         println!("{:?}", x);
-
-        // let id: Option<i64> = i.get("idx");
-        // println!("{:?}",id);
-        // let first_name: String = i.get("first_name");
-        // let last_name: String = i.get("last_name");
-        // let age: i64 = i.get("age");
-        // let gender: String = i.get("gender");
-        // let x: String = i.get("x");
-
-        // println!("{id} {first_name} {last_name} {age} {gender}");
     }
-
-    // let i = rows.iter().map(|r| format("{} - {}",r.get::<i64>,_>("id"),r.get::<String,_>("first_name")).<collect::Vec<String>>().join(",");
-    //
-    // }
 
     Ok(())
 }

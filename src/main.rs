@@ -1,10 +1,9 @@
-
 #![allow(dead_code, unused_variables, unused_assignments, unused_imports)]
 use sqlx::sqlite::SqliteRow;
 
-use sqlx::Row;
 use sqlx::sqlite;
 use sqlx::Connection;
+use sqlx::Row;
 
 #[derive(sqlx::FromRow, Debug)]
 struct Dbstruct {
@@ -21,11 +20,11 @@ struct Dbstruct {
 impl From<&SqliteRow> for Dbstruct {
     fn from(row: &SqliteRow) -> Dbstruct {
         Dbstruct {
-            id: row.get("id"),
-            first_name: row.get("first_name"),
-            last_name: row.get("last_name"),
-            age: row.get("age"),
-            gender: row.get("gender"),
+            id: row.try_get("id").unwrap_or(0),
+            first_name: row.try_get("first_name").unwrap_or("_".to_string()),
+            last_name: row.try_get("last_name").unwrap_or("_".to_string()),
+            age: row.try_get("age").unwrap_or(0),
+            gender: row.try_get("gender").unwrap_or("_".to_string()),
         }
     }
 }

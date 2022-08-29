@@ -1,0 +1,21 @@
+
+.open test2.db
+CREATE TABLE users (name TEXT,uid INTEGER);
+INSERT INTO users (name,uid) VALUES ("bob",12);
+INSERT INTO users (name,uid) VALUES ("joe",4);
+INSERT INTO users (name,uid) VALUES ("bill",8);
+
+
+
+CREATE TABLE phones (uid INTEGER ,num TEXT);
+INSERT INTO phones (uid,num) VALUES (8,"bill's phone");
+INSERT INTO phones (uid,num) VALUES (4,"Joe's phone");
+INSERT INTO phones (uid,num) VALUES (12,"boby's phone");
+
+SELECT users.name,phones.num FROM users, phones ON users.uid = phones.uid;
+
+
+
+
+
+

@@ -1,0 +1,44 @@
+
+
+
+CREATE TABLE
+IF NOT EXISTS datetime_text (d1 text, d2 text);
+
+.open books.db;
+
+
+CREATE TABLE person (
+"id" SERIAL8  PRIMARY KEY UNIQUE,
+"name" TEXT NOT NULL,
+"age" smallint NOT NULL,
+"email" TEXT NULL
+);
+
+CREATE TABLE book (
+"id" SERIAL8  PRIMARY KEY UNIQUE,
+"name" TEXT NOT NULL,
+"isbn" TEXT NOT NULL,
+"person" INT8 NOT NULL
+);
+
+ALTER TABLE book
+ ADD CONSTRAINT book_person_fkey"
+ FOREIGN KEY person
+ REFERENCES person(id);
+
+
+
+
+INTEGER
+
+
+
+
+CREATE TABLE students (
+  id INTEGER AUTO_INCREMENT PRIMARY KEY,
+  firstname VARCHAR(255) NOT NULL,
+  lastname TEXT NOT NULL,
+  age INTEGER NOT NULL
+);
+
+

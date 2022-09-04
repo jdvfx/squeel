@@ -1,68 +1,78 @@
 #![allow(dead_code, unused_variables, unused_assignments, unused_imports)]
-use sqlx::sqlite::SqliteRow;
 
 use sqlx::sqlite;
+use sqlx::sqlite::SqlitePool;
+use sqlx::sqlite::SqliteRow;
 use sqlx::Connection;
 use sqlx::Row;
+use std::env;
 
 #[derive(sqlx::FromRow, Debug)]
-struct Dbstruct {
+struct Version {
     id: i64,
-    first_name: String,
-    last_name: String,
-    age: i8,
-    gender: String,
+    source: String,
+    datapath: String,
+    depend: String,
+    approved: u8,
+    status: u8,
+    asset_id: i64,
 }
 
-// need to use try_get() instead of get()
-// otherwise, it's going to panic!
-// if any field is missing
-impl From<&SqliteRow> for Dbstruct {
-    fn from(row: &SqliteRow) -> Dbstruct {
-        Dbstruct {
-            id: row.try_get("id").unwrap_or(0),
-            first_name: row.try_get("first_name").unwrap_or("_".to_string()),
-            last_name: row.try_get("last_name").unwrap_or("_".to_string()),
-            age: row.try_get("age").unwrap_or(0),
-            gender: row.try_get("gender").unwrap_or("_".to_string()),
+impl From<&SqliteRow> for Version {
+    fn from(row: &SqliteRow) -> Version {
+        let dep: Vec<u8> = Vec::new();
+        Version {
+            id: row.try_get("id").unwrap_or(0_i64),
+            source: row.try_get("source").unwrap_or("_".to_string()),
+            datapath: row.try_get("datapath").unwrap_or("_".to_string()),
+            depend: row.try_get("depend").unwrap_or("_".to_string()),
+            approved: row.try_get("approved").unwrap_or(0),
+            status: row.try_get("status").unwrap_or(0),
+            asset_id: row.try_get("asset_id").unwrap_or(0),
         }
     }
 }
 
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
-    let mut conn = sqlite::SqliteConnection::connect("sqlite:/home/bunker/test1.db").await?;
-
-    let row = sqlx::query("SELECT * FROM people")
-        .fetch_all(&mut conn)
+    //
+    let create_assets = true;
+    let create_versions = true;
+    let db_name = "sqlite:/home/bunker/assets2.db";
+    //
+    if create_assets == true {
+        let mut conn = sqlite::SqliteConnection::connect(&db_name).await?;
+        let ct_assets = sqlx::query(
+            r#"
+                CREATE TABLE IF NOT EXISTS "assets" (
+                    "id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                    "name"	TEXT
+                );
+            "#,
+        )
+        .execute(&mut conn)
         .await?;
-
-    for i in row.iter() {
-        let x: Dbstruct = i.into();
-        println!("{:?}", x);
     }
-
+    //
+    if create_versions == true {
+        let mut conn = sqlite::SqliteConnection::connect(&db_name).await?;
+        let ct_assets = sqlx::query(
+            r#"
+                CREATE TABLE IF NOT EXISTS "versions" (
+                    "id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                    "source"	TEXT,
+                    "datapath"	TEXT,
+                    "depend"	TEXT,
+                    "approved"	INTEGER,
+                    "status"	INTEGER,
+                    "asset_id"	INTEGER,
+                    FOREIGN KEY("asset_id") REFERENCES "assets"("id")
+                );
+            "#,
+        )
+        .execute(&mut conn)
+        .await?;
+    }
+    //
     Ok(())
 }
-
-// > shows
-// show_id, show_name
-
-// > sequences
-// seq_id, seq_name , show_id*
-
-// > shots
-// shot_id, shot_name , seq_id*
-
-// > assets
-// asset_id (u32 = INTEGER)
-// asset_name (String = TEXT)
-// asset_location (Vec<String> = TEXT)
-
-// > versions
-// - asset_id (u32 = INTEGER) *
-// - version (u32 = INTEGER)
-// - datapath = "/path" (String = TEXT)
-// - source = "source" (String = TEXT)
-// - approved = bool
-// - status = "Online"

@@ -17,10 +17,8 @@ struct Version {
     status: u8,
     asset_id: i64,
 }
-
 impl From<&SqliteRow> for Version {
     fn from(row: &SqliteRow) -> Version {
-        let dep: Vec<u8> = Vec::new();
         Version {
             id: row.try_get("id").unwrap_or(0_i64),
             source: row.try_get("source").unwrap_or("_".to_string()),
@@ -29,6 +27,20 @@ impl From<&SqliteRow> for Version {
             approved: row.try_get("approved").unwrap_or(0),
             status: row.try_get("status").unwrap_or(0),
             asset_id: row.try_get("asset_id").unwrap_or(0),
+        }
+    }
+}
+
+#[derive(sqlx::FromRow, Debug)]
+struct Asset {
+    id: i64,
+    name: String,
+}
+impl From<&SqliteRow> for Asset {
+    fn from(row: &SqliteRow) -> Asset {
+        Asset {
+            id: row.try_get("id").unwrap_or(0_i64),
+            name: row.try_get("name").unwrap_or("_".to_string()),
         }
     }
 }

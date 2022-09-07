@@ -25,6 +25,7 @@ async fn create_versions_table(db_name: &str) -> Result<(), sqlx::Error> {
         r#"
             CREATE TABLE IF NOT EXISTS "versions" (
                 "id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                "version"	INTEGER,
                 "source"	TEXT,
                 "datapath"	TEXT,
                 "depend"	TEXT,

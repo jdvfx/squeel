@@ -4,6 +4,7 @@ use sqlx::Row;
 #[derive(sqlx::FromRow, Debug)]
 pub struct Version {
     pub id: i64,
+    pub version: i64,
     pub source: String,
     pub datapath: String,
     pub depend: String,
@@ -15,6 +16,7 @@ impl From<&SqliteRow> for Version {
     fn from(row: &SqliteRow) -> Version {
         Version {
             id: row.try_get("id").unwrap_or(0_i64),
+            version: row.try_get("version").unwrap_or(0_i64),
             source: row.try_get("source").unwrap_or("_".to_string()),
             datapath: row.try_get("datapath").unwrap_or("_".to_string()),
             depend: row.try_get("depend").unwrap_or("_".to_string()),

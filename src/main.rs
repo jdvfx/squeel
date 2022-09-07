@@ -1,3 +1,5 @@
+#![allow(dead_code, unused_variables, unused_assignments, unused_imports)]
+
 use sqlx::sqlite;
 use sqlx::Connection;
 mod assetdef;
@@ -40,13 +42,48 @@ async fn create_versions_table(db_name: &str) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
+async fn insert_asset(db_name: &str, asset_name: &str) -> Result<(), sqlx::Error> {
+    let mut conn = sqlite::SqliteConnection::connect(&db_name).await?;
+    // TO DO : use the result of _ct_assets_
+    //
+    //
+    //
+    let _ct_assets = sqlx::query(&format!(
+        "
+            INSERT INTO assets
+            ('name') VALUES ('{}');
+        ",
+        asset_name
+    ))
+    .execute(&mut conn)
+    .await?;
+    Ok(())
+}
+
+async fn insert_version(db_name: &str) -> Result<(), sqlx::Error> {
+    let mut conn = sqlite::SqliteConnection::connect(&db_name).await?;
+    // TO DO : use the result of _ct_assets_
+    let _ct_assets = sqlx::query(
+        r#"
+            INSERT INTO versions
+            ("source","datapath","depend","approved","status","asset_id") 
+            VALUES ("source_cone","datapath_cone","depend_cone",0,0,3);
+        "#,
+    )
+    .execute(&mut conn)
+    .await?;
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
     //
     let db_name = "sqlite:/home/bunker/assets2.db";
     //
-    create_assets_table(&db_name).await?;
-    create_versions_table(&db_name).await?;
+    // create_assets_table(&db_name).await?;
+    // create_versions_table(&db_name).await?;
+    // insert_version(&db_name).await?;
+    insert_asset(&db_name, &"my_new_asset").await?;
     //
     Ok(())
 }

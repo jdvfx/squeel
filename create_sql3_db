@@ -15,11 +15,26 @@ INSERT INTO phones (uid,num) VALUES (12,"boby's phone");
 SELECT users.name,phones.num FROM users, phones ON users.uid = phones.uid;
 
 
+.open /home/bunker/test2.db;
+
+INSERT INTO assets ("name") VALUES ("box");
+INSERT INTO assets ("name") VALUES ("sphere");
+INSERT INTO assets ("name") VALUES ("cone");
+
+id name
+1  box
+2  sphere
+3  cone
+
+
+
 // get all versions of asset "cone"
-SELECT id FROM assets WHERE name="cone"; > 2
-SELECT * FROM versions WHERE asset_id=2; 
+SELECT id FROM assets WHERE name="cone"; > 3 
+SELECT * FROM versions WHERE asset_id=3; 
 
 
-
+INSERT INTO versions
+("source","datapath","depend","approved","status","asset_id") 
+VALUES ("source_cone","datapath_cone","depend_cone",0,0,3);
 
 

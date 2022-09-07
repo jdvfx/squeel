@@ -2,6 +2,8 @@
 
 use sqlx::sqlite;
 use sqlx::Connection;
+
+use crate::assetdef::Asset;
 mod assetdef;
 //
 async fn create_assets_table(db_name: &str) -> Result<(), sqlx::Error> {
@@ -75,6 +77,28 @@ async fn insert_version(db_name: &str) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
+async fn find_asset_id(db_name: &str, asset_name: &str) -> Result<(), sqlx::Error> {
+    let mut conn = sqlite::SqliteConnection::connect(&db_name).await?;
+    // TO DO : use the result of _ct_assets_
+    let _ct_assets = sqlx::query(&format!(
+        "
+            SELECT * FROM assets WHERE name='{}';
+        ",
+        asset_name
+    ))
+    .fetch_all(&mut conn)
+    .await?;
+
+    // could do something better with closure and Turbofish...
+    for i in _ct_assets.iter() {
+        let x: Asset = i.into();
+        let id: i64 = x.id;
+        println!("{:?}", id);
+    }
+
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
     //
@@ -83,7 +107,8 @@ async fn main() -> Result<(), sqlx::Error> {
     // create_assets_table(&db_name).await?;
     // create_versions_table(&db_name).await?;
     // insert_version(&db_name).await?;
-    insert_asset(&db_name, &"my_new_asset").await?;
+    // insert_asset(&db_name, "my_new_asset").await?;
+    find_asset_id(&db_name, "cone").await?;
     //
     Ok(())
 }

@@ -15,6 +15,10 @@ INSERT INTO phones (uid,num) VALUES (12,"boby's phone");
 SELECT users.name,phones.num FROM users, phones ON users.uid = phones.uid;
 
 
+// get all versions of asset "cone"
+SELECT id FROM assets WHERE name="cone"; > 2
+SELECT * FROM versions WHERE asset_id=2; 
+
 
 
 
